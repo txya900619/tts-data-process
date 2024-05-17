@@ -1,9 +1,10 @@
-import jsonlines
-import os
-import torchaudio
-import torch
-from joblib import Parallel, delayed
 import argparse
+import os
+
+import jsonlines
+import torch
+import torchaudio
+from joblib import Parallel, delayed
 
 
 def concat_audio(audio_paths, save_path):
@@ -22,6 +23,7 @@ def concat_audio(audio_paths, save_path):
         bits_per_sample=16,
     )
 
+
 def get_concat_metadata(id_metadata_mapping, max_concat_number):
     concat_metadata = []
     id_source_audio_paths_mapping = {}
@@ -31,16 +33,20 @@ def get_concat_metadata(id_metadata_mapping, max_concat_number):
             if len(metadata["start"]) <= concat_number:
                 remained_id_metadata_mapping[id] = metadata
                 continue
-            
+
             metadata["start"] = metadata["start"] + metadata["start"][:concat_number]
             metadata["end"] = metadata["end"] + metadata["end"][:concat_number]
-            metadata["duration"] = metadata["duration"] + metadata["duration"][:concat_number]
+            metadata["duration"] = (
+                metadata["duration"] + metadata["duration"][:concat_number]
+            )
             metadata["text"] = metadata["text"] + metadata["text"][:concat_number]
             metadata["ipa"] = metadata["ipa"] + metadata["ipa"][:concat_number]
-            metadata["audio_path"] = metadata["audio_path"] + metadata["audio_path"][:concat_number]
+            metadata["audio_path"] = (
+                metadata["audio_path"] + metadata["audio_path"][:concat_number]
+            )
             for i in range(len(metadata["start"]) - concat_number):
                 start = metadata["start"][i]
-                end = metadata["end"][i+concat_number]
+                end = metadata["end"][i + concat_number]
                 new_id = f"{id}_{start}-{end}"
                 duration = sum(metadata["duration"][i : i + concat_number + 1])
                 text = "，".join(metadata["text"][i : i + concat_number + 1])
@@ -67,8 +73,16 @@ def get_concat_metadata(id_metadata_mapping, max_concat_number):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Audio Concatenation")
-    parser.add_argument("--config", type=str, nargs="+", help="List of config files")
-    parser.add_argument("--max_concat_number", type=int, default=1, help="Maximum number of concatenations")
+    parser.add_argument(
+        "-c", "--config", type=str, nargs="+", help="List of config files"
+    )
+    parser.add_argument(
+        "-m",
+        "--max_concat_number",
+        type=int,
+        default=1,
+        help="Maximum number of concatenations",
+    )
     args = parser.parse_args()
 
     for config in args.config:
@@ -105,9 +119,11 @@ if __name__ == "__main__":
         if not os.path.exists(wav_save_dir):
             os.makedirs(wav_save_dir)
 
-        concat_metadata, id_source_audio_paths_mapping = get_concat_metadata(id_metadata_mapping, args.max_concat_number)
+        concat_metadata, id_source_audio_paths_mapping = get_concat_metadata(
+            id_metadata_mapping, args.max_concat_number
+        )
 
-        with jsonlines.open(f"{config}_concat_v2.json", "w") as writer:
+        with jsonlines.open(f"{config}_concat.json", "w") as writer:
             writer.write_all(concat_metadata)
             writer.close()
 

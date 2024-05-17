@@ -1,9 +1,10 @@
-import jsonlines
-import os
-import torchaudio
-import torch
-from joblib import Parallel, delayed
 import argparse
+import os
+
+import jsonlines
+import torch
+import torchaudio
+from joblib import Parallel, delayed
 
 
 def concat_audio(audio_paths, save_path):

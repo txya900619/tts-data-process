@@ -1,9 +1,9 @@
+import argparse
 from pathlib import Path
 
-from joblib import Parallel, delayed
-import torchaudio
 import torch
-import argparse
+import torchaudio
+from joblib import Parallel, delayed
 
 
 def _trim_audio_by_info(
@@ -66,10 +66,18 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Trim audio files")
     parser.add_argument("input_dir", type=str, help="Input directory")
     parser.add_argument("output_dir", type=str, help="Output directory")
-    parser.add_argument("-s", "--sample_rate", type=int, default=22050, help="Desired sample rate")
-    parser.add_argument("-n", "--n_jobs", type=int, default=64, help="Number of parallel jobs")
-    parser.add_argument("-v", "--verbose", action="store_true", help="Display verbose output")
-    
+    parser.add_argument(
+        "-s", "--sample_rate", type=int, default=22050, help="Desired sample rate"
+    )
+    parser.add_argument(
+        "-n", "--n_jobs", type=int, default=64, help="Number of parallel jobs"
+    )
+    parser.add_argument(
+        "-v", "--verbose", action="store_true", help="Display verbose output"
+    )
+
     args = parser.parse_args()
-    
-    trim_audio_by_info(args.input_dir, args.output_dir, args.sample_rate, args.n_jobs, args.verbose)
+
+    trim_audio_by_info(
+        args.input_dir, args.output_dir, args.sample_rate, args.n_jobs, args.verbose
+    )
