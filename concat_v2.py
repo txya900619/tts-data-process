@@ -4,7 +4,6 @@ import os
 import jsonlines
 import torch
 import torchaudio
-from joblib import Parallel, delayed
 
 
 def concat_audio(audio_paths, save_path):
@@ -77,6 +76,9 @@ if __name__ == "__main__":
         "-c", "--config", type=str, nargs="+", help="List of config files"
     )
     parser.add_argument(
+        "-o", "--output_folder", type=str, help="Output path for concatenated wav files"
+    )
+    parser.add_argument(
         "-m",
         "--max_concat_number",
         type=int,
@@ -127,10 +129,12 @@ if __name__ == "__main__":
             writer.write_all(concat_metadata)
             writer.close()
 
-        Parallel(backend="threading", n_jobs=64, verbose=True)(
-            delayed(concat_audio)(
-                id_source_audio_paths_mapping[metadata["id"]],
-                metadata["audio_path"],
+        concat_info = ""
+        for metadata in concat_metadata:
+            concat_and_output_path = "\t".join(
+                id_source_audio_paths_mapping[metadata["id"]] + [metadata["audio_path"]]
             )
-            for metadata in concat_metadata
-        )
+            concat_info += concat_and_output_path + "\n"
+        with open(f"{config}_concat_info.tsv", "w") as f:
+            f.write(concat_info)
+            f.close()
