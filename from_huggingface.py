@@ -7,13 +7,6 @@ import soundfile as sf
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Process TTS data from Hugging Face")
     parser.add_argument(
-        "-c",
-        "--configs",
-        nargs="+",
-        default=["sixian", "hailu", "fa_sixian", "fa_hailu"],
-        help="List of configs to process",
-    )
-    parser.add_argument(
         "-o",
         "--output_dir",
         default="wav",
@@ -25,9 +18,9 @@ if __name__ == "__main__":
         default="formospeech/hat_tts",
         help="Name of the dataset to load",
     )
-    args = parser.parse_args()
 
-    for config in args.configs:
+    args = parser.parse_args()
+    for config in datasets.get_dataset_config_names(args.dataset):
         d = datasets.load_dataset(args.dataset, config, split="train")
         if not os.path.exists(f"{args.output_dir}/{config}"):
             os.makedirs(f"{args.output_dir}/{config}")
