@@ -96,6 +96,10 @@ if __name__ == "__main__":
                 duration = metadata["duration"]
                 text = metadata["text"]
                 ipa = metadata["ipa"]
+                dialect = metadata["dialect"]
+
+                if "speaker" not in metadata:
+                    metadata["speaker"] = f"hac_vocab_{config}"
                 speaker = metadata["speaker"]
                 audio_path = metadata["audio_path"]
                 if id not in id_metadata_mapping:
@@ -107,6 +111,7 @@ if __name__ == "__main__":
                         "audio_path": [audio_path],
                         "start": [start],
                         "end": [end],
+                        "dialect": dialect,
                     }
                 else:
                     id_metadata_mapping[id]["duration"].append(duration)
@@ -117,7 +122,7 @@ if __name__ == "__main__":
                     id_metadata_mapping[id]["end"].append(end)
 
         concat_metadata = []
-        wav_save_dir = f"wav_concat_v2/{config}"
+        wav_save_dir = os.path.join(args.output_folder, config)
         if not os.path.exists(wav_save_dir):
             os.makedirs(wav_save_dir)
 
