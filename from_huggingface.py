@@ -18,10 +18,16 @@ if __name__ == "__main__":
         default="formospeech/hat_tts",
         help="Name of the dataset to load",
     )
+    parser.add_argument(
+        "-s",
+        "--split",
+        default="train",
+        help="Name of the split to load"
+    )
 
     args = parser.parse_args()
     for config in datasets.get_dataset_config_names(args.dataset):
-        d = datasets.load_dataset(args.dataset, config, split="train")
+        d = datasets.load_dataset(args.dataset, config, split=args.split)
         if not os.path.exists(f"{args.output_dir}/{config}"):
             os.makedirs(f"{args.output_dir}/{config}")
         for x in d:
