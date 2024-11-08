@@ -19,17 +19,46 @@ if __name__ == "__main__":
         help="Name of the dataset to load",
     )
     parser.add_argument(
-        "-s",
-        "--split",
-        default="train",
-        help="Name of the split to load"
+        "-s", "--split", default="train", help="Name of the split to load"
+    )
+    parser.add_argument(
+        "-c",
+        "--configs",
+        default=[],
+        nargs="*",
+        help="List of dataset configurations to load",
+    )
+    parser.add_argument(
+        "-f",
+        "--filter-keys",
+        default=[],
+        nargs="*",
+    )
+    parser.add_argument(
+        "-g",
+        "--grater-than",
+        default=[],
+        nargs="*",
     )
 
     args = parser.parse_args()
-    for config in datasets.get_dataset_config_names(args.dataset):
+    configs = (
+        datasets.get_dataset_config_names(args.dataset)
+        if len(args.configs) == 0
+        else args.configs
+    )
+    for config in configs:
         d = datasets.load_dataset(args.dataset, config, split=args.split)
         if not os.path.exists(f"{args.output_dir}/{config}"):
             os.makedirs(f"{args.output_dir}/{config}")
+        if len(args.filter_keys) > 0 and len(args.grater_than) == len(args.filter_keys):
+            d = d.filter(
+                lambda x: all(
+                    x[k] > float(v) if k in x else False
+                    for k, v in zip(args.filter_keys, args.grater_than)
+                )
+            )
+
         for x in d:
             sf.write(
                 f"{args.output_dir}/{config}/{x['audio']['path']}",
