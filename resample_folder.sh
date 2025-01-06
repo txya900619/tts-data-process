@@ -12,4 +12,4 @@ OUTPUT_FOLDER=$2
 
 find $INPUT_FOLDER -type d -print0 | parallel -0 mkdir -p "{= s:$INPUT_FOLDER:$OUTPUT_FOLDER:; =}"
  
-find $INPUT_FOLDER -name '*.wav' -type f -print0 | parallel --jobs 400% -0 sox {} -r 22050 "{= s:$INPUT_FOLDER:$OUTPUT_FOLDER:; =}"
+find $INPUT_FOLDER -name '*.wav' -type f -print0 | parallel --jobs 400% -0 sox {} -r 24000 "{= s:$INPUT_FOLDER:$OUTPUT_FOLDER:; =}"
