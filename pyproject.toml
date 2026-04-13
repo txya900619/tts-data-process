@@ -10,5 +10,5 @@ dependencies = [
     "jsonlines>=4.0.0",
     "soundfile>=0.13.0",
     "torch>=2.5.1",
-    "torchaudio>=2.5.1",
+    "torchaudio>=2.11.0",
 ]
